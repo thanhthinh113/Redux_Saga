@@ -3,33 +3,35 @@
 # dependencies
 node_modules/
 
-# Expo
+# Expo specific files and build output
 .expo/
 dist/
 web-build/
 
-# Native
-*.orig.*
+# Ignore temporary files created by Expo/Metro bundler
+.metro-health-check*
+
+# Native-specific security-related files (keystore, provisioning, certificates)
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 
-# Metro
-.metro-health-check*
+# Ignore backup or original files created by merging or patching
+*.orig.*
 
-# debug
+# Debug log files
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# macOS system files
 .DS_Store
 *.pem
 
-# local env files
+# Local environment configuration files
 .env*.local
 
-# typescript
+# TypeScript specific: ignore build info files
 *.tsbuildinfo
