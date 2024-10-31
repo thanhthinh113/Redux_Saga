@@ -1,6 +1,6 @@
 // src/components/DataView.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, Alert, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AddUserModal from './AddUserModal';
 
@@ -10,32 +10,33 @@ const DataView = () => {
   const loading = useSelector((state) => state.loading);
   const error = useSelector((state) => state.error);
   const [modalVisible, setModalVisible] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [editingUser, setEditingUser] = useState(null);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_DATA_REQUEST' });
   }, [dispatch]);
 
-  const handleEdit = (item) => {
-    // Thực hiện các hành động để sửa item
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setModalVisible(true);
   };
 
   const handleDelete = (id) => {
-    dispatch({ type: 'DELETE_ITEM_REQUEST', payload: id }); // Gửi yêu cầu xóa item
+    Alert.alert('Delete User', 'Are you sure you want to delete this user?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'OK', onPress: () => dispatch({ type: 'DELETE_ITEM_REQUEST', payload: id }) },
+    ]);
   };
 
   const openModal = () => {
+    setEditingUser(null);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
+    setEditingUser(null);
   };
-
-  const filteredData = data.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (loading) {
     return (
@@ -55,19 +56,12 @@ const DataView = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search by name or title"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
-
       <TouchableOpacity style={styles.addUserButton} onPress={openModal}>
         <Text style={styles.buttonText}>Add User</Text>
       </TouchableOpacity>
 
       <FlatList
-        data={filteredData}
+        data={data}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
@@ -85,7 +79,7 @@ const DataView = () => {
         )}
       />
 
-      <AddUserModal visible={modalVisible} onClose={closeModal} />
+      <AddUserModal visible={modalVisible} onClose={closeModal} user={editingUser} />
     </SafeAreaView>
   );
 };
